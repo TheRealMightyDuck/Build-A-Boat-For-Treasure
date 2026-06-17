@@ -5,16 +5,17 @@ local ScreenGui = PlayerGui:WaitForChild("CarControlsInfoAndMobileButtons")
 local ControlFrame = ScreenGui:WaitForChild("ControlFrame")
 
 function ToggleEffect(Object)
-	if Object:IsA("TextButton") then
-		local Stroke = Instance.new("UIStroke")
-		Stroke.Thickness = 2
-		Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		task.delay(0.25, function()
-			if Stroke then
-				Stroke:Destroy()
-			end
-		end)
-	end
+	local TextLabel = Instance.new("TextLabel")
+	TextLabel.Size = UDim2.new(1, 0, 1, 0)
+	TextLabel.BackgroundTransparency = 1
+	TextLabel.Text = "Click to toggle"
+	TextLabel.TextColor3 = Color3.new(1, 1, 1)
+	TextLabel.TextSize = 16
+	TextLabel.Font = Enum.Font.GothamBold
+	TextLabel.Parent = PlayerGui
+	task.delay(1, function()
+		TextLabel:Destroy()
+	end)
 end
 
 -- Main GUI
@@ -70,7 +71,7 @@ CreateButton.MouseButton1Click:Connect(function()
 	end
 
 	ButtonCount += 1
-	
+
 	ToggleEffect(CreateButton)
 
 	local NewButton = Instance.new("TextButton")
@@ -81,7 +82,7 @@ CreateButton.MouseButton1Click:Connect(function()
 	NewButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 	NewButton.TextColor3 = Color3.new(1, 1, 1)
 	NewButton.Parent = Gui
-	
+
 	NewButton.MouseButton1Click:Connect(function()
 		ToggleEffect(NewButton)
 	end)
