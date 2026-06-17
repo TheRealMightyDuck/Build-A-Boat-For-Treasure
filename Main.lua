@@ -5,17 +5,17 @@ local ScreenGui = PlayerGui:WaitForChild("CarControlsInfoAndMobileButtons")
 local ControlFrame = ScreenGui:WaitForChild("ControlFrame")
 
 function ToggleEffect(Object)
-	local TextLabel = Instance.new("TextLabel")
-	TextLabel.Size = UDim2.new(1, 0, 1, 0)
-	TextLabel.BackgroundTransparency = 1
-	TextLabel.Text = "Click to toggle"
-	TextLabel.TextColor3 = Color3.new(1, 1, 1)
-	TextLabel.TextSize = 16
-	TextLabel.Font = Enum.Font.GothamBold
-	TextLabel.Parent = PlayerGui
-	task.delay(1, function()
-		TextLabel:Destroy()
-	end)
+	if Object:IsA("GuiButton") then
+		local Stroke = Instance.new("UIStroke")
+		Stroke.Thickness = 2
+		Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		Stroke.Parent = Object
+		task.delay(0.25, function()
+			if Stroke then
+				Stroke:Destroy()
+			end
+		end)
+	end
 end
 
 -- Main GUI
