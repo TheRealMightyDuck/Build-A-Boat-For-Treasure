@@ -1,5 +1,6 @@
 local Player = game.Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
+local TweenService = game:GetService("TweenService")
 
 local ScreenGui = PlayerGui:WaitForChild("CarControlsInfoAndMobileButtons")
 local ControlFrame = ScreenGui:WaitForChild("ControlFrame")
@@ -76,6 +77,36 @@ CreateButton.MouseButton1Click:Connect(function()
 	table.insert(CreatedButtons, NewButton)
 
 	NewButton.Visible = ControlFrame.Visible
+
+	-- Button press effect
+	NewButton.MouseButton1Click:Connect(function()
+		local OriginalSize = NewButton.Size
+
+		local Shrink = TweenService:Create(
+			NewButton,
+			TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{
+				Size = UDim2.new(
+					OriginalSize.X.Scale,
+					OriginalSize.X.Offset - 10,
+					OriginalSize.Y.Scale,
+					OriginalSize.Y.Offset - 4
+				)
+			}
+		)
+
+		local Grow = TweenService:Create(
+			NewButton,
+			TweenInfo.new(0.12, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+			{
+				Size = OriginalSize
+			}
+		)
+
+		Shrink:Play()
+		Shrink.Completed:Wait()
+		Grow:Play()
+	end)
 
 	TextBox.Text = ""
 end)
