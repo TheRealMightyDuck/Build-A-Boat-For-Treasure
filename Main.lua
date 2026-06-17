@@ -18,42 +18,11 @@ Frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 Frame.BorderSizePixel = 0
 Frame.Parent = Gui
 
-local Corner = Instance.new("UICorner")
-Corner.Parent = Frame
+local FrameDrag = Instance.new("UIDragDetector")
+FrameDrag.Parent = Frame
 
--- Dragging
-local UIS = game:GetService("UserInputService")
-
-local Dragging = false
-local DragStart
-local StartPos
-
-Frame.InputBegan:Connect(function(Input)
-	if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-		Dragging = true
-		DragStart = Input.Position
-		StartPos = Frame.Position
-
-		Input.Changed:Connect(function()
-			if Input.UserInputState == Enum.UserInputState.End then
-				Dragging = false
-			end
-		end)
-	end
-end)
-
-UIS.InputChanged:Connect(function(Input)
-	if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
-		local Delta = Input.Position - DragStart
-
-		Frame.Position = UDim2.new(
-			StartPos.X.Scale,
-			StartPos.X.Offset + Delta.X,
-			StartPos.Y.Scale,
-			StartPos.Y.Offset + Delta.Y
-		)
-	end
-end)
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.Parent = Frame
 
 -- TextBox
 local TextBox = Instance.new("TextBox")
@@ -76,42 +45,50 @@ CreateButton.Parent = Frame
 local CreateCorner = Instance.new("UICorner")
 CreateCorner.Parent = CreateButton
 
--- Container for created buttons
-local ButtonHolder = Instance.new("Frame")
-ButtonHolder.Size = UDim2.fromOffset(200, 300)
-ButtonHolder.Position = UDim2.new(1, -220, 0.5, -150)
-ButtonHolder.BackgroundTransparency = 1
-ButtonHolder.Parent = Gui
+local CreatedButtons = {}
+local ButtonCount = 0
 
-local Layout = Instance.new("UIListLayout")
-Layout.Padding = UDim.new(0, 5)
-Layout.Parent = ButtonHolder
-
--- Create new buttons
+-- Create buttons
 CreateButton.MouseButton1Click:Connect(function()
-	local Name = TextBox.Text
+	local Name = TextBox.Text:gsub("^%s*(.-)%s*$", "%1")
 
 	if Name == "" then
 		return
 	end
 
+	ButtonCount += 1
+
 	local NewButton = Instance.new("TextButton")
-	NewButton.Size = UDim2.new(1, 0, 0, 40)
+	NewButton.Name = Name
+	NewButton.Size = UDim2.fromOffset(150, 40)
+	NewButton.Position = UDim2.new(0, 20, 0, 20 + (ButtonCount * 50))
 	NewButton.Text = Name
 	NewButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 	NewButton.TextColor3 = Color3.new(1, 1, 1)
-	NewButton.Parent = ButtonHolder
+	NewButton.Parent = Gui
+
+	local DragDetector = Instance.new("UIDragDetector")
+	DragDetector.Parent = NewButton
 
 	local Corner = Instance.new("UICorner")
 	Corner.Parent = NewButton
 
+	table.insert(CreatedButtons, NewButton)
+
+	NewButton.Visible = ControlFrame.Visible
+
 	TextBox.Text = ""
 end)
 
--- Visibility handling
+-- Show/hide everything with ControlFrame
 local function UpdateVisibility()
 	Frame.Visible = ControlFrame.Visible
-	ButtonHolder.Visible = ControlFrame.Visible
+
+	for _, Button in ipairs(CreatedButtons) do
+		if Button and Button.Parent then
+			Button.Visible = ControlFrame.Visible
+		end
+	end
 end
 
 UpdateVisibility()
