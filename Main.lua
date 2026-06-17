@@ -1,9 +1,21 @@
 local Player = game.Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
-local TweenService = game:GetService("TweenService")
 
 local ScreenGui = PlayerGui:WaitForChild("CarControlsInfoAndMobileButtons")
 local ControlFrame = ScreenGui:WaitForChild("ControlFrame")
+
+function ToggleEffect(Object)
+	if Object:IsA("TextButton") then
+		local Stroke = Instance.new("UIStroke")
+		Stroke.Thickness = 2
+		Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		task.delay(0.25, function()
+			if Stroke then
+				Stroke:Destroy()
+			end
+		end)
+	end
+end
 
 -- Main GUI
 local Gui = Instance.new("ScreenGui")
@@ -58,6 +70,8 @@ CreateButton.MouseButton1Click:Connect(function()
 	end
 
 	ButtonCount += 1
+	
+	ToggleEffect(CreateButton)
 
 	local NewButton = Instance.new("TextButton")
 	NewButton.Name = Name
@@ -67,6 +81,10 @@ CreateButton.MouseButton1Click:Connect(function()
 	NewButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 	NewButton.TextColor3 = Color3.new(1, 1, 1)
 	NewButton.Parent = Gui
+	
+	NewButton.MouseButton1Click:Connect(function()
+		ToggleEffect(NewButton)
+	end)
 
 	local DragDetector = Instance.new("UIDragDetector")
 	DragDetector.Parent = NewButton
@@ -77,36 +95,6 @@ CreateButton.MouseButton1Click:Connect(function()
 	table.insert(CreatedButtons, NewButton)
 
 	NewButton.Visible = ControlFrame.Visible
-
-	-- Button press effect
-	NewButton.MouseButton1Click:Connect(function()
-		local OriginalSize = NewButton.Size
-
-		local Shrink = TweenService:Create(
-			NewButton,
-			TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-			{
-				Size = UDim2.new(
-					OriginalSize.X.Scale,
-					OriginalSize.X.Offset - 10,
-					OriginalSize.Y.Scale,
-					OriginalSize.Y.Offset - 4
-				)
-			}
-		)
-
-		local Grow = TweenService:Create(
-			NewButton,
-			TweenInfo.new(0.12, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-			{
-				Size = OriginalSize
-			}
-		)
-
-		Shrink:Play()
-		Shrink.Completed:Wait()
-		Grow:Play()
-	end)
 
 	TextBox.Text = ""
 end)
